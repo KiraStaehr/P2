@@ -3,6 +3,7 @@ import * as socket_io from "socket.io";
 import {ConnectionTable} from "./connection.js";
 import {Spinner} from './backend-spinner.js';
 import {ColorPicker} from "./ColorPicker.js";
+import {detectUserCollisions} from "./backend-collision.js";
 
 // AkvarioServer controls all real time connection with users all users.
 export class AkvarioServer{
@@ -71,7 +72,8 @@ export class AkvarioServer{
 
     moveUser(socket, position){
         this.editUserProperty(socket.id, 'position', position);
-        socket.broadcast.emit('moved', this.id(socket.id), position);
+        if (!detectUserCollisions(this.userProperties.allUsers(),this.userProperties.positions,this.id(socket.id), position))
+            socket.broadcast.emit('moved', this.id(socket.id), position);
     }
 
     rotateUser(socket, rotation) {

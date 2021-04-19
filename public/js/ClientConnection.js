@@ -10,6 +10,7 @@ import {config} from './clientConfig.js';
 export class ClientConnection{
     socket;
     myID;
+    OtherUserPositions = {};
 
     constructor(options) {
         this.socket = io(options)
@@ -90,6 +91,7 @@ export class ClientConnection{
     }
 
     move(id, position){
+        this.OtherUserPositions[id] = position;
         moveUser(id, position);
     }
 

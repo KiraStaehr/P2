@@ -2,6 +2,7 @@ import {useCameraMove, updateMouseCoordinates} from './cameraMove.js';
 import {usePopUpMenu, userCoordinates, cameraCoordinates} from './popUpMenu.js';
 import {startSpinner} from './ClientConnection.js';
 import {peers} from './PeerConnection.js';
+import {collision} from "./userCollision.js";
 
 export function moveUser(id, position){
     const containerElement = document.getElementById(id);
@@ -73,14 +74,22 @@ export function makeInteractable(id){
             pos3 = e.clientX;
             pos4 = e.clientY;
 
+
             const top  = (containerElement.offsetTop  - pos2);
             const left = (containerElement.offsetLeft - pos1);
+            //console.log(`top: ${top} left: ${left} pos3: ${containerElement.offsetTop} pos4: ${containerElement.offsetLeft}`);
 
-            containerElement.style.top  = top + "px";
-            containerElement.style.left = left + "px";
 
-            const userMoved = new CustomEvent('moved', {detail: {top:top, left:left}});
-            containerElement.dispatchEvent(userMoved);
+            if (!collision({top, left})) {
+                containerElement.style.top  = top + "px";
+                containerElement.style.left = left + "px";
+                const userMoved = new CustomEvent('moved', {detail: {top: top, left: left}});
+                containerElement.dispatchEvent(userMoved);
+            }
+            else{
+                console.log('collision occured!!');
+            }
+
 
             // hides popupmenu upon moving
             const popup = document.getElementById("menuPopUp");
